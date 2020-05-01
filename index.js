@@ -9,14 +9,66 @@
  for you to use if you need it!
  */
 
-let allWagesFor = function () {
-    let eligibleDates = this.timeInEvents.map(function (e) {
+function createEmployeeRecord ([firstname, familyname, title, pph]) {
+    return {
+        firstName: firstname,
+        familyName: familyname,
+        title: title,
+        payPerHour: pph,
+        timeInEvents: [],
+        timeOutEvents: []}
+}
+
+function createEmployeeRecords (AoA){
+    return AoA.map(createEmployeeRecord)
+}
+
+function createTimeInEvent (date){
+    let timeObject= {
+        type: "TimeIn",
+        hour: parseInt(date.split(" ")[1]),
+        date: date.split(" ")[0]
+    }
+    this.timeInEvents.push(timeObject)
+    return this
+}
+
+function createTimeOutEvent (date){
+    let timeObject= {
+        type: "TimeOut",
+        hour: parseInt(date.split(" ")[1]),
+        date: date.split(" ")[0]
+    }
+    this.timeOutEvents.push(timeObject)
+    return this
+}
+
+function hoursWorkedOnDate(date) {
+    let timein= this.timeInEvents.find(timeObject=> timeObject.date==date)
+    let timeout= this.timeOutEvents.find(timeObject=> timeObject.date==date)
+    return (timeout.hour-timein.hour)/100
+}
+
+function wagesEarnedOnDate(date) {
+    return hoursWorkedOnDate.call(this, date)*this.payPerHour
+}
+
+let allWagesFor = function(){
+    let eligibleDates = this.timeInEvents.map(function(e){
         return e.date
     })
 
-    let payable = eligibleDates.reduce(function (memo, d) {
+    let payable = eligibleDates.reduce(function(memo, d){
         return memo + wagesEarnedOnDate.call(this, d)
-    }.bind(this), 0) // <== Hm, why did we need to add bind() there? We'll discuss soon!
+    }.bind(this), 0)
 
     return payable
+}
+
+function findEmployeeByFirstName (srcArray, firstName){
+    return srcArray.find(emp=> emp.firstName===firstName)
+}
+
+function calculatePayroll (srcArray){
+    return srcArray.reduce((sum, emp)=> sum+allWagesFor.call(emp),0)
 }
